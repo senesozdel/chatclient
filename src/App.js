@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import Chat from './pages/Chat';
 import Login from './pages/Login';
@@ -12,8 +12,12 @@ import * as signalR from '@microsoft/signalr'
 import { addFriendRequestsToArray } from './features/user/userSlice';
 import Deneme from './pages/Deneme';
 import Layout from './components/Layout';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
+import { message } from 'antd';
+import Cookies from "js-cookie";
+import { messageBackup } from './utils/messageBackup';
+import Settings from './pages/Settings';
 function App() {
 
   const [hubConnection, setHubConnection] = useState(null)
@@ -22,6 +26,13 @@ function App() {
   const connectionSlice = useSelector((state) => state.connection)
   const messageSlice = useSelector((state)=>state.message)
   const userSlice = useSelector((state)=>state.user)
+  const userCookie = Cookies.get('user');
+  const loggedUser = userCookie ? JSON.parse(userCookie) : null;
+  const messagesRef = useRef(messageSlice.allMessages);
+
+  useEffect(() => {
+    messagesRef.current = messageSlice.allMessages;
+  }, [messageSlice.allMessages]);
 
   useEffect(()=>{
   if(connectionSlice.isConnected){
@@ -42,17 +53,44 @@ function App() {
     if (hubConnection) {
 
       hubConnection.invoke("OnConnected",userSlice.userName).catch(error =>console.log(error))
+
+      // hubConnection.on("clientJoined",  (username) => {
+
+      //   if(loggedUser?.username != username){
+      //     message.info(`${username} huba bağlandı`)
+      //     console.log(`${username} huba bağlandı`)
+      //   }
+      // })
+
     
-      hubConnection.on("receiveMessage",  (message) => {
-         dispatch(setReceivedMessage(message))
-         dispatch(addMessageToArray(message))
+      hubConnection.on("receiveMessage",  (receiveMessage) => {
+        try {
+        if(receiveMessage.status){
+          dispatch(setReceivedMessage(receiveMessage))
+          dispatch(addMessageToArray(receiveMessage))
+        }
+        else{
+          message.error("Alıcı Hub'a Bağlı Değil")
+        }
+
+      } catch (error) {
+          console.error("Mesaj işlenirken hata:", error);
+      }
 
       })
 
       hubConnection.on("receiveAddFriendReuqest",  (message) => {
-        console.log(message);
         dispatch(addFriendRequestsToArray(message))
       })
+
+      hubConnection.on("takeBackup",  (value) => {
+
+        if(value){
+          messageBackup(messagesRef.current)
+        }
+
+      })
+      
 
     }
   }, [hubConnection, dispatch])
@@ -82,6 +120,7 @@ function App() {
             <Route path="/chat" element={<Chat hubConnection={hubConnection} />} />
             <Route path="/userSettings" element={<UserSettings hubConnection={hubConnection} />} />
             <Route path="/deneme" element={<Deneme hubConnection={hubConnection} />} />
+            <Route path="/settings" element={<Settings hubConnection={hubConnection} />} />
           </Route>
         </Route>
 

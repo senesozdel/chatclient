@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Row, Col, Form, Button, ListGroup, Card, CardHeader } from 'react-bootstrap';
-import Sidebar from '../components/Sidebar';
 import { useDispatch, useSelector } from 'react-redux';
-import { addTransmittedMessageReceiver, setTransmittedMessage } from '../features/message/messageSlice';
-import { getFriends } from '../dataRequests/userRequest';
+import {  clearTransmittedMessage, setAllMessages, setTransmittedMessage } from '../features/message/messageSlice';
 import Cookies from "js-cookie";
-import { message } from 'antd';
 import { setFriends } from '../features/user/userSlice';
 import axios from "axios";
-import { FaUser, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { dateFormatter } from '../utils/dateFormatter';
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { parseISO } from 'date-fns';
+import { v4 as uuidv4 } from 'uuid';
+import { APP_CONFIG } from "../config/config";
 
 const Chat = ({ hubConnection }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -21,15 +22,17 @@ const Chat = ({ hubConnection }) => {
   const dispatch = useDispatch();
   const messageSlice = useSelector((state) => state.message)
   const connectionSlice = useSelector((state) => state.connection)
+  const BASE_URL = APP_CONFIG.API_URL;
 
-  const filteredData = userSlice.friends.filter((item) =>
+
+  const filteredData = userSlice.friends?.filter((item) =>
     item.userName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+
   useEffect(() => {
     if (connectionSlice.isConnected) {
-
-      axios.get(`https://localhost:7288/api/User/friends/${loggedUser.email}`)
+      axios.get(`${BASE_URL}/api/User/friends/${loggedUser.email}`)
         .then((res) => {
           console.log(res.data)
           dispatch(setFriends(res.data))
@@ -38,21 +41,60 @@ const Chat = ({ hubConnection }) => {
   }, [dispatch])
 
 
+  useEffect(()=>{
+
+    if(selectedUser && loggedUser) {
+
+      axios.get(`${BASE_URL}/GetMessages`,{
+        params:{
+          receiverMail : selectedUser.email,
+          senderMail: loggedUser.email
+        }
+      })
+      .then((res) => {
+        console.log(res.data)
+
+        let newMessages = res.data.filter((existingMessage) => {
+          return !messageSlice.allMessages.some((newMessage) => {
+              const existingTime = new Date(existingMessage.sendTime)
+                  .setMilliseconds(0); 
+              const newTime = new Date(newMessage.sendTime)
+                  .setMilliseconds(0);
+              
+              return existingTime === newTime && 
+                     existingMessage.content === newMessage.content;
+          });
+      });
+        dispatch(setAllMessages(newMessages))
+      })
+
+    }
+
+  },[selectedUser])
+
+
+
   const determineReceiverUser = (par) => {
     dispatch(setTransmittedMessage({ sender: loggedUser.email, receivers: [par] }))
-
     setSelectedUSer(par)
-
   }
 
 
   const handleSendMessage = (e) => {
     e.preventDefault();
     console.log(messageSlice.transmittedMessage)
+    const key = uuidv4();
 
-    hubConnection.invoke("SendMessageAsync", messageSlice.transmittedMessage)
+    const willSendMessage = {
+      ...messageSlice.transmittedMessage,
+      sendTime: dateFormatter.toISOString(),
+      key:key,
+      status:true
   };
-  console.log(messageSlice.allMessages)
+    hubConnection.invoke("SendMessageAsync", willSendMessage)
+    dispatch(clearTransmittedMessage())
+  };
+
 
   return (
     <Container fluid className="h-100 p-0">
@@ -84,7 +126,7 @@ const Chat = ({ hubConnection }) => {
               </div>
 
               <ListGroup className='friendsList flex-grow-1' style={{ overflowY: 'auto' }}>
-                {filteredData.map((item, index) => (
+                {filteredData?.map((item, index) => ( 
                   <ListGroup.Item
                     key={index}
                     className='d-flex align-items-center p-3 border-bottom hover-bg-light'
@@ -92,8 +134,14 @@ const Chat = ({ hubConnection }) => {
                     onClick={() => determineReceiverUser(item)}
                   >
                     <div className='profile-icon me-3'>
-                      <div className='rounded-circle p-2 bg-light text-secondary d-flex align-items-center justify-content-center shadow-sm' style={{ width: '40px', height: '40px' }}>
-                        <FaUser className='fs-5' />
+                      <div className='rounded-circle  bg-light text-secondary d-flex align-items-center justify-content-center shadow-sm' style={{ width: '40px', height: '40px' }}>
+                        {/* <FaUser className='fs-5' /> */}
+                        <img
+                      src={item.image ? `${BASE_URL}${item.image}` : '/images/emptyuser.png'}
+                      alt="Profil Resmi"
+                      className="rounded-circle"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                       </div>
                     </div>
                     <div className='fs-5 text-dark'>
@@ -135,8 +183,13 @@ const Chat = ({ hubConnection }) => {
                 className='d-flex align-items-center p-3  hover-bg-light'
               >
                 <div className='profile-icon me-3'>
-                  <div className='rounded-circle p-2 bg-light text-secondary d-flex align-items-center justify-content-center shadow-sm' style={{ width: '40px', height: '40px' }}>
-                    <FaUser className='fs-5' />
+                  <div className='rounded-circle bg-light text-secondary d-flex align-items-center justify-content-center shadow-sm' style={{ width: '40px', height: '40px' }}>
+                  <img
+                      src={selectedUser?.image ? `${BASE_URL}${selectedUser.image}` : '/images/emptyuser.png'}
+                      alt="Profil Resmi"
+                      className="rounded-circle"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                   </div>
                 </div>
                 <div className='fs-5 text-dark'>
@@ -145,7 +198,7 @@ const Chat = ({ hubConnection }) => {
               </div>
 
             </CardHeader>
-            <Card.Body className="d-flex flex-column h-100 p-3">
+            <Card.Body className="d-flex flex-column h-75 p-3">
 
               <ListGroup variant="flush" className="flex-grow-1 overflow-auto mb-3">
                 {selectedUser ? (
@@ -155,6 +208,9 @@ const Chat = ({ hubConnection }) => {
                         selectedUser.email === item.sender ||
                         selectedUser.email === item.receivers[0].email
                     )
+                    .sort((a, b) => {
+                      return parseISO(a.sendTime).getTime() - parseISO(b.sendTime).getTime();
+                    })
                     .map((item, index) => (
                       <ListGroup.Item
                         key={index}
@@ -174,7 +230,7 @@ const Chat = ({ hubConnection }) => {
                         >
                           {item.content}
                         </div>
-                        <small className="text-muted align-self-end">{item.sendTime}</small>
+                        <small className="text-muted align-self-end">{dateFormatter.toTimeDay(item.sendTime)}</small>
                       </ListGroup.Item>
                     ))
                 ) : (
@@ -189,19 +245,32 @@ const Chat = ({ hubConnection }) => {
                 <Form.Control
                   as="textarea"
                   rows={1}
+                  value={messageSlice.transmittedMessage.content}
                   placeholder="Mesajınızı yazın..."
                   style={{
                     resize: "none",
                   }}
                   onChange={(e) => dispatch(setTransmittedMessage({ content: e.target.value }))}
                 />
-                <Button
+                {
+                  connectionSlice.isConnected && messageSlice.transmittedMessage.content ? 
+                  <Button
 
                   variant="primary"
                   type="submit"
                 >
                   Gönder
                 </Button>
+                :
+                <Button
+                disabled
+                variant="primary"
+                type="submit"
+              >
+                Gönder
+              </Button>
+                }
+
               </Form>
             </Card.Body>
           </Card>

@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   userName: "",
   password:"",
+  image:"",
   email:"",
   friendRequests:[],
   receivedFriendRequests:[],
@@ -18,6 +19,9 @@ export const userSlice = createSlice({
     },
     setPassword: (state,action) => {
         state.password = action.payload;  
+    },
+    setImage: (state,action) => {
+      state.image = action.payload;  
     },
     setEmail: (state,action) => {
       state.email = action.payload;  
@@ -37,6 +41,6 @@ export const userSlice = createSlice({
   },
 })
 
-export const { setUsername, setPassword,setEmail,addFriendRequestsToArray,setFriends ,removeFriendRequestFromArray,setFriendRequests} = userSlice.actions
+export const { setUsername,setImage, setPassword,setEmail,addFriendRequestsToArray,setFriends ,removeFriendRequestFromArray,setFriendRequests} = userSlice.actions
 
 export default userSlice.reducer

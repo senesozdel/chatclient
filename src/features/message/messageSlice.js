@@ -7,6 +7,7 @@ const initialState = {
     receivers:[],
     content:"",
     sendTime:"",
+    key:"",
     status:false
   },
   receivedMessage:{
@@ -14,6 +15,7 @@ const initialState = {
     receivers:[],
     content:"",
     sendTime:"",
+    key:"",
     status:false
   }
 }
@@ -32,13 +34,26 @@ export const messageSlice = createSlice({
     addMessageToArray: (state, action) => {
       state.allMessages.push(action.payload);
     },
+    setAllMessages :(state,action) =>{
+      state.allMessages.unshift(...action.payload);
+    },
     addTransmittedMessageReceiver:(state,action)=>{
       state.transmittedMessage.receivers.push(action.payload)
+    },
+    clearTransmittedMessage: (state) => {
+      const { sender, receivers } = state.transmittedMessage; 
+      state.transmittedMessage = {
+        sender,
+        receivers,
+        content: "",
+        sendTime: "",
+        status: false
+      };
     }
     
 }})
 
 // Action creators are generated for each case reducer function
-export const { setTransmittedMessage,setReceivedMessage,addMessageToArray,addTransmittedMessageReceiver} = messageSlice.actions
+export const { setTransmittedMessage,setReceivedMessage,addMessageToArray,addTransmittedMessageReceiver,setAllMessages,clearTransmittedMessage} = messageSlice.actions
 
 export default messageSlice.reducer

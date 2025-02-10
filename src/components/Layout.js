@@ -61,7 +61,7 @@ const Layout = () => {
         <Nav.Item>
         <Nav.Link 
             as={Link} 
-            to="/userSettings"
+            to="/settings"
             className={`nav-link py-3 ${location.pathname === '/settings' ? 'active' : ''}`}
             title="Ayarlar"
           >

@@ -1,8 +1,11 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { APP_CONFIG } from "../config/config";
+
+const BASE_URL = APP_CONFIG.API_URL;
 
 export const addNewUser = async (payload) => {
-    const url = "https://localhost:7288/api/User";
+    const url = `${BASE_URL}/api/User`;
   
     try {
       await axios.post(url, payload);
@@ -14,7 +17,7 @@ export const addNewUser = async (payload) => {
   };
 
   export const login = async (payload) => {
-    const url = "https://localhost:7288/api/Auth/login";
+    const url = `${BASE_URL}/api/Auth/login` ;
 
     try {
     const result = await axios.post(url, payload);
@@ -30,7 +33,7 @@ export const addNewUser = async (payload) => {
   };
 
 export const addNewRelation = async ( payload) =>{
-  const url = "https://localhost:7288/api/UserRelationShip";
+  const url = `${BASE_URL}/CreateUserRelationship`
     try {
       await axios.post(url, payload);
       return true; 
@@ -41,7 +44,8 @@ export const addNewRelation = async ( payload) =>{
 }  ;
 
 export const createNewRelationRequests = async ( payload) =>{
-  const url = "https://localhost:7288/api/UserRelationRequests";
+  const url = `${BASE_URL}/api/UserRelationRequests`
+
     try {
       await axios.post(url, payload);
       return true; 
@@ -52,8 +56,8 @@ export const createNewRelationRequests = async ( payload) =>{
 }  ;
 
   export const getFriends = async (param )=>{
-    const url = `https://localhost:7288/api/User/friends/${param}`;
-  
+    const url = `${BASE_URL}/api/User/friends/${param}`
+
     try {
       var result = await axios.get(url);
       return result; 
@@ -63,7 +67,7 @@ export const createNewRelationRequests = async ( payload) =>{
   }
 
   export const getFriendRequests = async (param )=>{
-    const url = `https://localhost:7288/api/UserRelationRequests/?email=${param}`;
+    const url = `${BASE_URL}/api/UserRelationRequests/?email=${param}`;
   
     try {
       var result = await axios.get(url);
@@ -74,7 +78,7 @@ export const createNewRelationRequests = async ( payload) =>{
   }
 
   export const deleteFriendRequests = async (payload )=>{
-    const url = `https://localhost:7288/api/UserRelationRequests`;
+    const url = `${BASE_URL}/api/UserRelationRequests`;
   
     try {
       var result = await axios.delete(url,{
