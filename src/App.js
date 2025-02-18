@@ -10,7 +10,6 @@ import Register from './pages/Register';
 import UserSettings from './pages/UserSetttings';
 import * as signalR from '@microsoft/signalr'
 import { addFriendRequestsToArray } from './features/user/userSlice';
-import Deneme from './pages/Deneme';
 import Layout from './components/Layout';
 import { Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -18,6 +17,8 @@ import { message } from 'antd';
 import Cookies from "js-cookie";
 import { messageBackup } from './utils/messageBackup';
 import Settings from './pages/Settings';
+import { APP_CONFIG } from "../src/config/config";
+
 function App() {
 
   const [hubConnection, setHubConnection] = useState(null)
@@ -29,6 +30,8 @@ function App() {
   const userCookie = Cookies.get('user');
   const loggedUser = userCookie ? JSON.parse(userCookie) : null;
   const messagesRef = useRef(messageSlice.allMessages);
+  const BASE_URL = APP_CONFIG.API_URL;
+  
 
   useEffect(() => {
     messagesRef.current = messageSlice.allMessages;
@@ -37,7 +40,7 @@ function App() {
   useEffect(()=>{
   if(connectionSlice.isConnected){
     const newConnection = new signalR.HubConnectionBuilder()
-    .withUrl("https://localhost:7288/chathub")
+    .withUrl(`${BASE_URL}/chathub`)
     .withAutomaticReconnect()
     .build();
 
@@ -48,19 +51,26 @@ function App() {
   }
   },[connectionSlice.isConnected])
 
+  useEffect(()=>{
+
+
+
+          hubConnection?.on("clientJoined",  (username) => {
+
+        if(loggedUser?.username != username){
+          message.info(`${username} huba bağlandı`)
+          console.log(`${username} huba bağlandı`)
+        }
+      })
+
+
+  },[hubConnection])
+
 
   useEffect(() => {
     if (hubConnection) {
 
       hubConnection.invoke("OnConnected",userSlice.userName).catch(error =>console.log(error))
-
-      // hubConnection.on("clientJoined",  (username) => {
-
-      //   if(loggedUser?.username != username){
-      //     message.info(`${username} huba bağlandı`)
-      //     console.log(`${username} huba bağlandı`)
-      //   }
-      // })
 
     
       hubConnection.on("receiveMessage",  (receiveMessage) => {
@@ -119,7 +129,6 @@ function App() {
             <Route path="/" element={<Navigate to="/chat" replace />} />
             <Route path="/chat" element={<Chat hubConnection={hubConnection} />} />
             <Route path="/userSettings" element={<UserSettings hubConnection={hubConnection} />} />
-            <Route path="/deneme" element={<Deneme hubConnection={hubConnection} />} />
             <Route path="/settings" element={<Settings hubConnection={hubConnection} />} />
           </Route>
         </Route>

@@ -21,11 +21,11 @@ const Layout = () => {
       path: '/userSettings',
       title: 'Bağlantılar'
     },
-    {
-      icon: <MdOutlineWorkspaces />,
-      path: '/workspace',
-      title: 'Çalışma Alanı'
-    }
+    // {
+    //   icon: <MdOutlineWorkspaces />,
+    //   path: '/workspace',
+    //   title: 'Çalışma Alanı'
+    // }
   ];
 
   const handleLogout = () => {

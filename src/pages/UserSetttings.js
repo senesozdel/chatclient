@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { message } from 'antd';
 import { addNewRelation, createNewRelationRequests, deleteFriendRequests, getFriendRequests } from '../dataRequests/userRequest';
 import { removeFriendRequestFromArray, setFriendRequests } from '../features/user/userSlice';
+
 const UserSettings = ({ hubConnection }) => {
   const [email, setEmail] = useState('');
   const [selectedSection, setSelectedSection] = useState('addFriend');

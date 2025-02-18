@@ -5,10 +5,10 @@ import { APP_CONFIG } from "../config/config";
 const BASE_URL = APP_CONFIG.API_URL;
 
 export const addNewUser = async (payload) => {
-    const url = `${BASE_URL}/api/User`;
+    const url = `${BASE_URL}/User/Create`;
   
     try {
-      await axios.post(url, payload);
+      await axios.post(url, payload)
       return true; 
     } catch (error) {
       console.error('Error adding new user:', error);
@@ -17,10 +17,15 @@ export const addNewUser = async (payload) => {
   };
 
   export const login = async (payload) => {
-    const url = `${BASE_URL}/api/Auth/login` ;
+    const url = `${BASE_URL}/Auth/Login` ;
 
     try {
-    const result = await axios.post(url, payload);
+      const result = await axios.post(url, payload, {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        withCredentials: true // CORS with credentials
+    });
     const token = result.data.token;
     const userInfos = result.data.user;
     Cookies.set('token', token, { expires: 1, path: '' });
@@ -33,7 +38,7 @@ export const addNewUser = async (payload) => {
   };
 
 export const addNewRelation = async ( payload) =>{
-  const url = `${BASE_URL}/CreateUserRelationship`
+  const url = `${BASE_URL}/UserRelationShip/CreateCustom`
     try {
       await axios.post(url, payload);
       return true; 
@@ -44,7 +49,7 @@ export const addNewRelation = async ( payload) =>{
 }  ;
 
 export const createNewRelationRequests = async ( payload) =>{
-  const url = `${BASE_URL}/api/UserRelationRequests`
+  const url = `${BASE_URL}/UserRelationRequests/Create`
 
     try {
       await axios.post(url, payload);
@@ -56,7 +61,7 @@ export const createNewRelationRequests = async ( payload) =>{
 }  ;
 
   export const getFriends = async (param )=>{
-    const url = `${BASE_URL}/api/User/friends/${param}`
+    const url = `${BASE_URL}/User/GetFiends/${param}`
 
     try {
       var result = await axios.get(url);
@@ -67,7 +72,7 @@ export const createNewRelationRequests = async ( payload) =>{
   }
 
   export const getFriendRequests = async (param )=>{
-    const url = `${BASE_URL}/api/UserRelationRequests/?email=${param}`;
+    const url = `${BASE_URL}/UserRelationRequests/GetFriendRequests?email=${param}`;
   
     try {
       var result = await axios.get(url);
@@ -78,7 +83,7 @@ export const createNewRelationRequests = async ( payload) =>{
   }
 
   export const deleteFriendRequests = async (payload )=>{
-    const url = `${BASE_URL}/api/UserRelationRequests`;
+    const url = `${BASE_URL}/UserRelationRequests/Delete`;
   
     try {
       var result = await axios.delete(url,{

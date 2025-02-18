@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setEmail, setPassword, setUsername } from "../features/user/userSlice";
 import { addNewUser } from "../dataRequests/userRequest";
 import { message } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
 
@@ -47,13 +47,15 @@ const Register = () => {
         <Col>
           <Card style={{ width: "24rem", padding: "20px" }}>
             <Card.Body>
-              <Card.Title className="text-center mb-4">Kayıt Ol</Card.Title>
+              <Card.Title className="text-center mb-4">
+                <img src="/images/logo.png" /> 
+              </Card.Title>
               <Form onSubmit={handleRegister}>
                 <Form.Group controlId="formUsername" className="mb-3">
                   <Form.Label>Kullanıcı Adı</Form.Label>
                   <Form.Control
                     type="text"
-                    placeholder="Kullanıcı adınızı girin"
+                    placeholder="Type Username"
                     value={userSlice.userName}
                     onChange={(e) => dispatch(setUsername(e.target.value))}
                   />
@@ -78,7 +80,7 @@ const Register = () => {
                 </Form.Group>
 
                 <Form.Group controlId="formConfirmPassword" className="mb-3">
-                  <Form.Label>Şifreyi Yeniden Girin</Form.Label>
+                  <Form.Label>Şifreyi Doğrula</Form.Label>
                   <Form.Control
                     type="password"
                     placeholder="Şifrenizi yeniden girin"
@@ -87,9 +89,10 @@ const Register = () => {
                   />
                 </Form.Group>
 
-                <Button variant="primary" type="submit" className="w-100">
+                <Button variant="primary" type="submit" className="w-100 mb-2">
                   Kayıt Ol
                 </Button>
+                <p >Zaten Üye Misin? <span><Link to={"/login"}>Giriş Yap</Link></span></p>
               </Form>
             </Card.Body>
           </Card>

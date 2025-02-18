@@ -32,7 +32,7 @@ const Chat = ({ hubConnection }) => {
 
   useEffect(() => {
     if (connectionSlice.isConnected) {
-      axios.get(`${BASE_URL}/api/User/friends/${loggedUser.email}`)
+      axios.get(`${BASE_URL}/User/GetFriends/${loggedUser.email}`)
         .then((res) => {
           console.log(res.data)
           dispatch(setFriends(res.data))
@@ -45,11 +45,15 @@ const Chat = ({ hubConnection }) => {
 
     if(selectedUser && loggedUser) {
 
-      axios.get(`${BASE_URL}/GetMessages`,{
+      axios.get(`${BASE_URL}/Message/GetDesiredMessages`,{
         params:{
           receiverMail : selectedUser.email,
           senderMail: loggedUser.email
-        }
+        },
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      }
       })
       .then((res) => {
         console.log(res.data)

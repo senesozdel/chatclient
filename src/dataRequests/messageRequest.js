@@ -1,7 +1,11 @@
 import axios from "axios";
+import { APP_CONFIG } from "../config/config";
+
+const BASE_URL = APP_CONFIG.API_URL;
 
 export const sendBackup = async ( payload) =>{
-  const url = "https://localhost:7288/CreateMulti";
+  const url = `${BASE_URL}/Message/CreateMulti` ;
+
     try {
       await axios.post(url, payload);
       return true; 

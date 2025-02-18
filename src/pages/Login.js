@@ -2,7 +2,7 @@ import React from 'react'
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux'
 import { setPassword, setUsername } from '../features/user/userSlice';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../dataRequests/userRequest';
 import { message } from 'antd';
 import {  setConnectionState } from '../features/connection/connectionSlice';
@@ -34,7 +34,6 @@ const Login = ({hubConnection}) => {
             message.error("Failed to login.");
           }
 
-
       }
 
 
@@ -44,7 +43,9 @@ const Login = ({hubConnection}) => {
       <Col>
         <Card style={{ width: '24rem', padding: '20px' }}>
           <Card.Body>
-            <Card.Title className="text-center mb-4">SeS</Card.Title>
+            <Card.Title className="text-center mb-4">
+            <img src="/images/logo.png" /> 
+            </Card.Title>
             <Form onSubmit={handleLogin}>
               <Form.Group controlId="formUsername" className="mb-3">
                 <Form.Label>Kullanıcı Adı</Form.Label>
@@ -56,9 +57,10 @@ const Login = ({hubConnection}) => {
                 <Form.Control type="password" placeholder="Şifrenizi girin" value={userSlice.password}   onChange={(e)=>dispatch(setPassword(e.target.value))} />
               </Form.Group>
 
-              <Button variant="primary" type="submit" className="w-100" >
+              <Button variant="primary" type="submit" className="w-100 mb-2" >
                 Giriş Yap
               </Button>
+              <p >Henüz Kayıtlı Değil Misin? <span><Link to={"/register"}>Yeni Hesap</Link></span></p>
             </Form>
           </Card.Body>
         </Card>

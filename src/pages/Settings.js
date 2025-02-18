@@ -4,17 +4,20 @@ import { FaPencilAlt } from "react-icons/fa";
 import axios from 'axios';
 import Cookies from "js-cookie";
 import { message } from 'antd';
+import { APP_CONFIG } from "../config/config";
+
 
 const Settings = () => {
   const userCookie = Cookies.get('user');
   const loggedUser = userCookie ? JSON.parse(userCookie) : null;
-  const backendAddress = "https://localhost:7288";
+  const BASE_URL = APP_CONFIG.API_URL;
+
 
   const [user, setUser] = useState({
     username: loggedUser?.username || '',
     email: loggedUser?.email || '',
-    profileImage: loggedUser?.image ? `${backendAddress}${loggedUser.image}` : '/images/emptyuser.png',
-    previewImage: loggedUser?.image ? `${backendAddress}${loggedUser.image}` : '/images/emptyuser.png',
+    profileImage: loggedUser?.image ? `${BASE_URL}${loggedUser.image}` : '/images/emptyuser.png',
+    previewImage: loggedUser?.image ? `${BASE_URL}${loggedUser.image}` : '/images/emptyuser.png',
     selectedFile: null
   });
 
@@ -76,7 +79,7 @@ const Settings = () => {
       formData.append('image', user.selectedFile); // 'file' yerine 'image' kullanıyoruz
 
       const response = await axios.post(
-        `${backendAddress}/api/User/upload-image/${user.email}`,
+        `${BASE_URL}/User/UploadImage/${user.email}`,
         formData,
         {
           headers: {
@@ -94,8 +97,8 @@ const Settings = () => {
 
         setUser(prevState => ({
           ...prevState,
-          profileImage: `${backendAddress}${response.data.imagePath}`,
-          previewImage: `${backendAddress}${response.data.imagePath}`,
+          profileImage: `${BASE_URL}${response.data.imagePath}`,
+          previewImage: `${BASE_URL}${response.data.imagePath}`,
           selectedFile: null
         }));
 
