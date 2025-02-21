@@ -34,7 +34,6 @@ const Chat = ({ hubConnection }) => {
     if (connectionSlice.isConnected) {
       axios.get(`${BASE_URL}/User/GetFriends/${loggedUser.email}`)
         .then((res) => {
-          console.log(res.data)
           dispatch(setFriends(res.data))
         })
     }
@@ -56,7 +55,6 @@ const Chat = ({ hubConnection }) => {
       }
       })
       .then((res) => {
-        console.log(res.data)
 
         let newMessages = res.data.filter((existingMessage) => {
           return !messageSlice.allMessages.some((newMessage) => {
@@ -86,7 +84,6 @@ const Chat = ({ hubConnection }) => {
 
   const handleSendMessage = (e) => {
     e.preventDefault();
-    console.log(messageSlice.transmittedMessage)
     const key = uuidv4();
 
     const willSendMessage = {
@@ -141,7 +138,7 @@ const Chat = ({ hubConnection }) => {
                       <div className='rounded-circle  bg-light text-secondary d-flex align-items-center justify-content-center shadow-sm' style={{ width: '40px', height: '40px' }}>
                         {/* <FaUser className='fs-5' /> */}
                         <img
-                      src={item.image ? `${BASE_URL}${item.image}` : '/images/emptyuser.png'}
+                      src={item.image ? `${item.image}` : '/images/emptyuser.png'}
                       alt="Profil Resmi"
                       className="rounded-circle"
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -189,7 +186,7 @@ const Chat = ({ hubConnection }) => {
                 <div className='profile-icon me-3'>
                   <div className='rounded-circle bg-light text-secondary d-flex align-items-center justify-content-center shadow-sm' style={{ width: '40px', height: '40px' }}>
                   <img
-                      src={selectedUser?.image ? `${BASE_URL}${selectedUser.image}` : '/images/emptyuser.png'}
+                      src={selectedUser?.image ? `${selectedUser.image}` : '/images/emptyuser.png'}
                       alt="Profil Resmi"
                       className="rounded-circle"
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}

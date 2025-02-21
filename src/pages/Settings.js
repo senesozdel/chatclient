@@ -16,8 +16,8 @@ const Settings = () => {
   const [user, setUser] = useState({
     username: loggedUser?.username || '',
     email: loggedUser?.email || '',
-    profileImage: loggedUser?.image ? `${BASE_URL}${loggedUser.image}` : '/images/emptyuser.png',
-    previewImage: loggedUser?.image ? `${BASE_URL}${loggedUser.image}` : '/images/emptyuser.png',
+    profileImage: loggedUser?.image ? `${loggedUser.image}` : '/images/emptyuser.png',
+    previewImage: loggedUser?.image ? `${loggedUser.image}` : '/images/emptyuser.png',
     selectedFile: null
   });
 
@@ -78,8 +78,8 @@ const Settings = () => {
       const formData = new FormData();
       formData.append('image', user.selectedFile); // 'file' yerine 'image' kullanıyoruz
 
-      const response = await axios.post(
-        `${BASE_URL}/User/UploadImage/${user.email}`,
+      const response = await axios.put(
+        `${BASE_URL}/File/UploadImage/${user.email}`,
         formData,
         {
           headers: {
@@ -97,8 +97,8 @@ const Settings = () => {
 
         setUser(prevState => ({
           ...prevState,
-          profileImage: `${BASE_URL}${response.data.imagePath}`,
-          previewImage: `${BASE_URL}${response.data.imagePath}`,
+          profileImage: `${response.data.imagePath}`,
+          previewImage: `${response.data.imagePath}`,
           selectedFile: null
         }));
 

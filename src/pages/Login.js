@@ -1,7 +1,7 @@
 import React from 'react'
 import { Form, Button, Container, Row, Col, Card } from 'react-bootstrap';
 import { useSelector, useDispatch } from 'react-redux'
-import { setPassword, setUsername } from '../features/user/userSlice';
+import { setPassword, setUsername,setEmail } from '../features/user/userSlice';
 import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../dataRequests/userRequest';
 import { message } from 'antd';
@@ -26,6 +26,9 @@ const Login = ({hubConnection}) => {
             message.success("Login successfully!").then(()=>{
 
               dispatch(setConnectionState(true))
+              dispatch(setUsername(""));
+              dispatch(setPassword(""));
+              dispatch(setEmail(""));
             
             }
             ).then(()=> navigate("/chat"));
