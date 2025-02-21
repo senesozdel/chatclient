@@ -70,7 +70,7 @@ function App() {
   useEffect(() => {
     if (hubConnection) {
 
-      hubConnection.invoke("OnConnected",userSlice.userName).catch(error =>console.log(error))
+      hubConnection.invoke("OnConnected",loggedUser?.username).catch(error =>console.log(error))
 
     
       hubConnection.on("receiveMessage",  (receiveMessage) => {

@@ -38,6 +38,7 @@ const Register = () => {
     dispatch(setUsername(""));
     dispatch(setPassword(""));
     dispatch(setEmail(""));
+    setConfirmPassword("");
 
   };
 

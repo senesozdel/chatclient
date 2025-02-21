@@ -252,6 +252,14 @@ const Chat = ({ hubConnection }) => {
                     resize: "none",
                   }}
                   onChange={(e) => dispatch(setTransmittedMessage({ content: e.target.value }))}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {  
+                      e.preventDefault();  
+                      if (connectionSlice.isConnected && messageSlice.transmittedMessage.content) {
+                        handleSendMessage(e);
+                      }
+                    }
+                  }}
                 />
                 {
                   connectionSlice.isConnected && messageSlice.transmittedMessage.content ? 
