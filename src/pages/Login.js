@@ -14,28 +14,35 @@ const Login = ({hubConnection}) => {
     const navigate = useNavigate()
     const handleLogin =async(e)=>{
       e.preventDefault();
-        
-            const payload = {
-              userName:userSlice.userName,
-              password:userSlice.password
-          }
-      
-          const result = await login(payload);
-      
-          if (result) {
-            message.success("Login successfully!").then(()=>{
+      dispatch(setLoading(true)); 
 
-              dispatch(setConnectionState(true))
-              dispatch(setUsername(""));
-              dispatch(setPassword(""));
-              dispatch(setEmail(""));
-            
-            }
-            ).then(()=> navigate("/chat"));
+         try {
+        const payload = {
+          userName: userSlice.userName,
+          password: userSlice.password
+        }
     
-          } else {
-            message.error("Failed to login.");
-          }
+        const result = await login(payload);
+    
+        if (result) {
+          message.success("Login successfully!").then(() => {
+            dispatch(setConnectionState(true))
+            dispatch(setUsername(""));
+            dispatch(setPassword(""));
+            dispatch(setEmail(""));
+            navigate("/chat");
+          });
+        } 
+        else {
+          message.error("Failed to login.");
+        }
+      } 
+      catch (error) {
+        message.error("An error occurred during login.");
+      } 
+      finally {
+        dispatch(setLoading(false)); 
+      }
 
       }
 
@@ -60,9 +67,21 @@ const Login = ({hubConnection}) => {
                 <Form.Control type="password" placeholder="Şifrenizi girin" value={userSlice.password}   onChange={(e)=>dispatch(setPassword(e.target.value))} />
               </Form.Group>
 
-              <Button variant="primary" type="submit" className="w-100 mb-2" >
-                Giriş Yap
-              </Button>
+              <Button 
+                    variant="primary" 
+                    type="submit" 
+                    className="w-100 mb-2"
+                    disabled={userSlice.isLoading}
+                  >
+                    {userSlice.isLoading ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Giriş Yapılıyor...
+                      </>
+                    ) : (
+                      'Giriş Yap'
+                    )}
+                  </Button>
               <p >Henüz Kayıtlı Değil Misin? <span><Link to={"/register"}>Yeni Hesap</Link></span></p>
             </Form>
           </Card.Body>

@@ -7,7 +7,8 @@ const initialState = {
   email:"",
   friendRequests:[],
   receivedFriendRequests:[],
-  friends:[]
+  friends:[],
+  isLoading: false
 }
 
 export const userSlice = createSlice({
@@ -37,10 +38,13 @@ export const userSlice = createSlice({
     },
     setFriends:(state,action)=>{
       state.friends = action.payload
+    },
+    setLoading: (state, action) => {
+      state.isLoading = action.payload
     }
   },
 })
 
-export const { setUsername,setImage, setPassword,setEmail,addFriendRequestsToArray,setFriends ,removeFriendRequestFromArray,setFriendRequests} = userSlice.actions
+export const { setUsername,setImage, setPassword,setEmail,addFriendRequestsToArray,setFriends,setLoading ,removeFriendRequestFromArray,setFriendRequests} = userSlice.actions
 
 export default userSlice.reducer

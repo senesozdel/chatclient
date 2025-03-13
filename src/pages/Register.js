@@ -15,30 +15,39 @@ const Register = () => {
 
   const handleRegister = async(e) => {
     e.preventDefault();
+    
     if (userSlice.password !== confirmPassword) {
       message.error("Şifreler Eşleşmiyor");
       return;
     }
 
-    const payload = {
-        name:userSlice.userName,
-        email:userSlice.email,
-        password:userSlice.password
+    dispatch(setLoading(true));
+
+    try {
+      const payload = {
+        name: userSlice.userName,
+        email: userSlice.email,
+        password: userSlice.password
+      }
+
+      const result = await addNewUser(payload);
+
+      if (result) {
+        message.success("Kayıt işlemi başarılı!").then(() => {
+          dispatch(setUsername(""));
+          dispatch(setPassword(""));
+          dispatch(setEmail(""));
+          setConfirmPassword("");
+          navigate("/login");
+        });
+      } else {
+        message.error("Kayıt işlemi başarısız.");
+      }
+    } catch (error) {
+      message.error("Kayıt sırasında bir hata oluştu.");
+    } finally {
+      dispatch(setLoading(false));
     }
-
-    const result = await addNewUser(payload);
-
-    if (result) {
-      message.success("User added successfully!").then(()=>navigate("/login"));
-
-    } else {
-      message.error("Failed to add user.");
-    }
-
-    dispatch(setUsername(""));
-    dispatch(setPassword(""));
-    dispatch(setEmail(""));
-    setConfirmPassword("");
 
   };
 
@@ -90,8 +99,20 @@ const Register = () => {
                   />
                 </Form.Group>
 
-                <Button variant="primary" type="submit" className="w-100 mb-2">
-                  Kayıt Ol
+                <Button 
+                  variant="primary" 
+                  type="submit" 
+                  className="w-100 mb-2"
+                  disabled={userSlice.isLoading}
+                >
+                  {userSlice.isLoading ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Kayıt Yapılıyor...
+                    </>
+                  ) : (
+                    'Kayıt Ol'
+                  )}
                 </Button>
                 <p >Zaten Üye Misin? <span><Link to={"/login"}>Giriş Yap</Link></span></p>
               </Form>
