@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Card, Form, Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import { setEmail, setPassword, setUsername } from "../features/user/userSlice";
+import { setEmail, setPassword, setUsername,setLoading } from "../features/user/userSlice";
 import { addNewUser } from "../dataRequests/userRequest";
 import { message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
